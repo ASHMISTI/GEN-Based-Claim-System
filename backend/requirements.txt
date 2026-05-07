@@ -1,6 +1,5 @@
 fastapi
-uvicorn
-torch
-torchvision
+uvicorn[standard]
 pillow
+numpy
 python-multipart

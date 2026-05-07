@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:8000";
+const API = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 export const loginAPI = (data) => axios.post(`${API}/login`, data);
 export const uploadAPI = (data) => axios.post(`${API}/upload`, data);

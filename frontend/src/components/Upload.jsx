@@ -31,6 +31,9 @@ export default function Upload({ onClaimAdded, showToast, navigateTo }) {
   const [refId, setRefId]                 = useState("");
   const [brand, setBrand]                 = useState("");
   const [desc, setDesc]                   = useState("");
+  const [targetEmail, setTargetEmail]     = useState("");
+  const [sendingEmail, setSendingEmail]   = useState(false);
+  const [emailSent, setEmailSent]         = useState(false);
   const [msgIdx, setMsgIdx]               = useState(0);
   const fileRef = useRef();
   const intervalRef = useRef();
@@ -78,6 +81,22 @@ export default function Upload({ onClaimAdded, showToast, navigateTo }) {
       setStep(1);
     } finally {
       setProcessing(false);
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!targetEmail || !result) return;
+    setSendingEmail(true);
+    try {
+      // Need to import sendEmailAPI at the top, or just use axios directly. I'll use the API service.
+      const { sendEmailAPI } = require("../services/api");
+      await sendEmailAPI(result.id, targetEmail);
+      setEmailSent(true);
+      showToast("Email sent successfully!");
+    } catch (err) {
+      showToast(err.response?.data?.detail || "Failed to send email");
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -240,6 +259,34 @@ export default function Upload({ onClaimAdded, showToast, navigateTo }) {
                 </div>
               </div>
             </div>
+
+            {/* Email Form */}
+            <div style={{ marginTop: 24, padding: 16, background: "rgba(59,130,246,0.05)", borderRadius: 8, border: "1px solid rgba(59,130,246,0.1)" }}>
+              <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 8, color: "var(--accent)" }}>Want an email notification?</div>
+              {!emailSent ? (
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input
+                    type="email"
+                    className="form-input"
+                    placeholder="e.g. hehe34554@gmail.com"
+                    value={targetEmail}
+                    onChange={(e) => setTargetEmail(e.target.value)}
+                    style={{ flex: 1, padding: "8px 12px" }}
+                  />
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleSendEmail}
+                    disabled={sendingEmail || !targetEmail}
+                    style={{ padding: "8px 16px" }}
+                  >
+                    {sendingEmail ? "Sending..." : "Send"}
+                  </button>
+                </div>
+              ) : (
+                <div style={{ fontSize: 13, color: "var(--green)" }}>✓ Email sent successfully</div>
+              )}
+            </div>
+
             <div className="action-btns">
               <button className="btn btn-ghost" onClick={() => navigateTo("claims")}>View All Claims</button>
               <button className="btn btn-ghost" onClick={handleReset}>New Claim</button>

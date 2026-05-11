@@ -7,3 +7,5 @@ export const uploadAPI   = (data)     => axios.post(`${API}/upload`, data);
 export const getClaimsAPI = ()        => axios.get(`${API}/claims`);
 export const updateStatusAPI = (id, status) =>
   axios.patch(`${API}/claims/${id}/status`, { status });
+export const sendEmailAPI = (id, email) =>
+  axios.post(`${API}/claims/${id}/send-email`, { email });

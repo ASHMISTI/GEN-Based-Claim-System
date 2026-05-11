@@ -142,10 +142,10 @@ def get_decision(severity: int, damage: Optional[str] = None):
 # ─────────────────────────────────────────────
 # Email via Resend
 # ─────────────────────────────────────────────
-async def send_claim_email(claim: dict):
-    if not RESEND_API_KEY or not NOTIFY_EMAIL:
-        print("[Email] Skipped — RESEND_API_KEY or NOTIFY_EMAIL not set")
-        return
+async def send_claim_email(claim: dict, target_email: str):
+    if not RESEND_API_KEY:
+        print("[Email] Skipped — RESEND_API_KEY not set")
+        return False
 
     badge_color = {
         "Severe":   "#ef4444",
@@ -206,17 +206,20 @@ async def send_claim_email(claim: dict):
                 },
                 json={
                     "from":    "TyreGuard AI <onboarding@resend.dev>",
-                    "to":      [NOTIFY_EMAIL],
+                    "to":      [target_email],
                     "subject": f"[TyreGuard] New Claim #{str(claim['id']).zfill(5)} — {claim['damage']} Damage",
                     "html":    html,
                 },
             )
             if r.status_code >= 400:
                 print(f"[Email] Resend error {r.status_code}: {r.text}")
+                return False
             else:
-                print(f"[Email] Sent to {NOTIFY_EMAIL}")
+                print(f"[Email] Sent to {target_email}")
+                return True
     except Exception as e:
         print(f"[Email] Exception: {e}")
+        return False
 
 
 # ─────────────────────────────────────────────
@@ -264,10 +267,6 @@ async def upload(file: UploadFile = File(...)):
     claims_db.append(claim)
     claim_counter += 1
 
-    # Fire-and-forget email
-    import asyncio
-    asyncio.create_task(send_claim_email(claim))
-
     return claim
 
 
@@ -296,6 +295,23 @@ async def update_status(claim_id: int, body: StatusUpdate):
             claim["status"] = body.status
             return claim
     raise HTTPException(status_code=404, detail="Claim not found")
+
+# ─────────────────────────────────────────────
+# Send Email manually
+# ─────────────────────────────────────────────
+class EmailRequest(BaseModel):
+    email: str
+
+@app.post("/claims/{claim_id}/send-email")
+async def trigger_email(claim_id: int, body: EmailRequest):
+    claim = next((c for c in claims_db if c["id"] == claim_id), None)
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+    
+    success = await send_claim_email(claim, body.email)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to send email. Check API key or verified email address.")
+    return {"status": "success"}
 
 
 # ─────────────────────────────────────────────

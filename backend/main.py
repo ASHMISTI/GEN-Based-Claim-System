@@ -115,9 +115,13 @@ async def analyze_with_gemini(image_bytes: bytes):
         severity = max(0, min(100, severity))
         return severity, damage, explanation
 
+    except httpx.HTTPStatusError as e:
+        err_text = e.response.text
+        print(f"[Gemini] HTTP Error: {err_text}", flush=True)
+        return None, None, f"API Error: {e.response.status_code} - {err_text}"
     except Exception as e:
-        print(f"[Gemini] Error: {e}")
-        return None, None, None
+        print(f"[Gemini] Error: {e}", flush=True)
+        return None, None, f"Exception: {str(e)}"
 
 
 # ─────────────────────────────────────────────
@@ -258,7 +262,8 @@ async def upload(file: UploadFile = File(...)):
         # Fallback to heuristic
         severity    = calculate_severity_fallback(image_bytes)
         damage, decision, manual_flag = get_decision(severity)
-        explanation = None
+        # Keep explanation if it has an error message for debugging
+        explanation = explanation if explanation else None
     else:
         damage, decision, manual_flag = get_decision(severity, damage)
 

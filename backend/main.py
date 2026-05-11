@@ -12,6 +12,12 @@ import json
 import re
 import base64
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+# Ensure we load the .env from the backend directory specifically
+env_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path=env_path)
 
 app = FastAPI()
 
@@ -322,6 +328,6 @@ async def root():
     return {
         "message":     "TyreGuard AI backend running",
         "gemini":      bool(GEMINI_API_KEY),
-        "email":       bool(RESEND_API_KEY and NOTIFY_EMAIL),
+        "email":       bool(RESEND_API_KEY),
         "total_claims": len(claims_db),
     }

@@ -13,8 +13,7 @@ import { getClaimsAPI } from "./services/api";
 /* ── Sidebar nav config ── */
 const NAV_MAIN = [
   {
-    id: "dashboard",
-    label: "Overview",
+    id: "dashboard", label: "Overview",
     icon: (
       <svg className="nav-icon" viewBox="0 0 16 16" fill="none">
         <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity=".7"/>
@@ -25,8 +24,7 @@ const NAV_MAIN = [
     ),
   },
   {
-    id: "upload",
-    label: "Submit Claim",
+    id: "upload", label: "Submit Claim",
     icon: (
       <svg className="nav-icon" viewBox="0 0 16 16" fill="none">
         <path d="M8 1v10M5 4l3-3 3 3M2 12v1.5A1.5 1.5 0 003.5 15h9A1.5 1.5 0 0014 13.5V12"
@@ -35,9 +33,7 @@ const NAV_MAIN = [
     ),
   },
   {
-    id: "claims",
-    label: "All Claims",
-    showBadge: true,
+    id: "claims", label: "All Claims", showBadge: true,
     icon: (
       <svg className="nav-icon" viewBox="0 0 16 16" fill="none">
         <path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"
@@ -47,8 +43,7 @@ const NAV_MAIN = [
     ),
   },
   {
-    id: "analytics",
-    label: "Analytics",
+    id: "analytics", label: "Analytics",
     icon: (
       <svg className="nav-icon" viewBox="0 0 16 16" fill="none">
         <path d="M2 12l4-4 3 3 5-7"
@@ -67,21 +62,28 @@ const PAGE_TITLES = {
 };
 
 export default function App() {
-  const [loggedIn, setLoggedIn]       = useState(false);
+  const [loggedIn, setLoggedIn]     = useState(false);
   const [currentUser, setCurrentUser] = useState("");
-  const [page, setPage]               = useState("dashboard");
-  const [claims, setClaims]           = useState([]);
-  const [toast, setToast]             = useState("");
+  const [page, setPage]             = useState("dashboard");
+  const [claims, setClaims]         = useState([]);
+  const [toast, setToast]           = useState("");
+  const [loading, setLoading]       = useState(false);
 
-  /* ── Fetch claims from backend ── */
+  /* ── Fetch claims ── */
   const fetchClaims = useCallback(async () => {
+    setLoading(true);
     try {
       const res = await getClaimsAPI();
-      // attach a local timestamp if the backend doesn't return one
-      const withTime = res.data.map((c) => ({ ...c, time: c.time || new Date().toISOString() }));
+      const withTime = res.data.map((c) => ({
+        ...c,
+        time:   c.time   || new Date().toISOString(),
+        status: c.status || "Pending",
+      }));
       setClaims(withTime);
     } catch {
-      /* silently ignore — toast shown elsewhere */
+      /* silently ignore */
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -89,18 +91,26 @@ export default function App() {
     if (loggedIn) fetchClaims();
   }, [loggedIn, fetchClaims]);
 
-  /* ── Toast helper ── */
+  /* ── Toast ── */
   const showToast = (msg) => {
     setToast(msg);
-    setTimeout(() => setToast(""), 2500);
+    setTimeout(() => setToast(""), 2800);
   };
 
-  /* ── Claim added from Upload ── */
+  /* ── Claim added ── */
   const handleClaimAdded = (claim) => {
-    setClaims((prev) => [...prev, { ...claim, time: new Date().toISOString() }]);
+    setClaims((prev) => [
+      ...prev,
+      { ...claim, time: claim.time || new Date().toISOString(), status: claim.status || "Pending" },
+    ]);
   };
 
-  /* ── Clear all claims ── */
+  /* ── Status changed in modal ── */
+  const handleStatusChange = (id, status) => {
+    setClaims((prev) => prev.map((c) => c.id === id ? { ...c, status } : c));
+  };
+
+  /* ── Clear all ── */
   const handleClearClaims = () => setClaims([]);
 
   /* ── Logout ── */
@@ -110,19 +120,16 @@ export default function App() {
     setPage("dashboard");
   };
 
-  /* ── Date string ── */
   const dateStr = new Date().toLocaleDateString("en-GB", {
     day: "numeric", month: "short", year: "numeric",
   });
 
   const manualCount = claims.filter((c) => c.manual_intervention).length;
 
-  /* ── Not logged in → show Login ── */
   if (!loggedIn) {
     return <Login setLoggedIn={setLoggedIn} setCurrentUser={setCurrentUser} />;
   }
 
-  /* ── Initials from username ── */
   const initials = currentUser
     .replace(/[^a-zA-Z0-9]/g, " ")
     .split(" ")
@@ -148,6 +155,7 @@ export default function App() {
           {NAV_MAIN.map((item) => (
             <button
               key={item.id}
+              id={`nav-${item.id}`}
               className={`nav-item ${page === item.id ? "active" : ""}`}
               onClick={() => setPage(item.id)}
             >
@@ -163,6 +171,7 @@ export default function App() {
         <div className="sidebar-section">
           <div className="sidebar-label">Settings</div>
           <button
+            id="nav-settings"
             className={`nav-item ${page === "settings" ? "active" : ""}`}
             onClick={() => setPage("settings")}
           >
@@ -219,6 +228,7 @@ export default function App() {
             <Dashboard
               claims={claims}
               navigateTo={setPage}
+              loading={loading}
             />
           )}
 
@@ -234,6 +244,9 @@ export default function App() {
             <AllClaims
               claims={claims}
               navigateTo={setPage}
+              onStatusChange={handleStatusChange}
+              showToast={showToast}
+              loading={loading}
             />
           )}
 

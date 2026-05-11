@@ -423,3 +423,104 @@ tbody td:first-child { color: var(--text); font-weight: 500; }
 .severity-bar-track { flex: 1; height: 4px; background: var(--bg4); border-radius: 2px; }
 .severity-bar-fill { height: 4px; border-radius: 2px; }
 .severity-score { font-size: 12px; font-family: var(--mono); }
+
+/* ── Skeleton shimmer ── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.skeleton-box {
+  background: linear-gradient(
+    90deg,
+    var(--bg3) 25%,
+    var(--bg4) 50%,
+    var(--bg3) 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.15s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-panel {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 16px; width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  animation: slideUp 0.2s ease;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 24px 24px 0;
+}
+.modal-claim-id { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+.modal-close-btn {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text3); border-radius: 8px; width: 32px; height: 32px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; transition: all 0.15s; font-family: var(--font);
+}
+.modal-close-btn:hover { background: var(--bg4); color: var(--text); }
+
+.modal-hero {
+  display: flex; align-items: center; gap: 20px;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+.modal-explanation {
+  padding: 16px 24px; background: rgba(59,130,246,0.04);
+  border-bottom: 1px solid var(--border);
+}
+.modal-section { padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.modal-section-title {
+  font-size: 11px; color: var(--accent); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+}
+.modal-info-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--border);
+}
+.modal-info-item {
+  background: var(--bg2); padding: 16px 20px;
+}
+.modal-info-item:first-child { border-radius: 0 0 0 16px; }
+.modal-info-item:last-child  { border-radius: 0 0 16px 0; }
+
+/* ── Status workflow buttons ── */
+.status-btn {
+  padding: 6px 14px; border-radius: 20px; font-size: 12px;
+  font-weight: 500; cursor: pointer; border: 1px solid var(--border);
+  background: var(--bg3); color: var(--text2);
+  font-family: var(--font); transition: all 0.15s;
+}
+.status-btn:hover { background: var(--bg4); color: var(--text); }
+.status-btn.active[data-status="Pending"]      { background: rgba(100,116,139,0.15); color: #94a3b8; border-color: rgba(100,116,139,0.3); }
+.status-btn.active[data-status="Under Review"] { background: rgba(245,158,11,0.15);  color: #fbbf24; border-color: rgba(245,158,11,0.3); }
+.status-btn.active[data-status="Approved"]     { background: rgba(34,197,94,0.15);   color: #4ade80; border-color: rgba(34,197,94,0.3); }
+.status-btn.active[data-status="Rejected"]     { background: rgba(239,68,68,0.15);   color: #f87171; border-color: rgba(239,68,68,0.3); }
+
+/* ── Pagination ── */
+.pagination-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; margin-top: 16px;
+}
+
+/* ── Recharts overrides ── */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line { stroke: var(--border); }
+.recharts-text { fill: var(--text3); font-size: 11px; font-family: var(--font); }
+.recharts-legend-item-text { color: var(--text2) !important; font-size: 12px; }
+.recharts-tooltip-cursor { fill: rgba(255,255,255,0.03); }

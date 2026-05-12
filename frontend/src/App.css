@@ -524,3 +524,146 @@ tbody td:first-child { color: var(--text); font-weight: 500; }
 .recharts-text { fill: var(--text3); font-size: 11px; font-family: var(--font); }
 .recharts-legend-item-text { color: var(--text2) !important; font-size: 12px; }
 .recharts-tooltip-cursor { fill: rgba(255,255,255,0.03); }
+
+/* ── Analytics hover insights ── */
+.analytics-hint {
+  background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.15);
+  border-radius: 8px; padding: 10px 16px; font-size: 13px; color: var(--text2);
+  margin-bottom: 20px;
+}
+.analytics-hoverable { transition: border-color 0.2s, box-shadow 0.2s; }
+.chart-hovered {
+  border-color: rgba(59,130,246,0.4) !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
+}
+.analytics-insight-card {
+  margin-top: 14px; background: rgba(59,130,246,0.05);
+  border: 1px solid rgba(59,130,246,0.15); border-radius: 8px;
+  padding: 12px 14px; animation: fadeUp 0.2s ease;
+}
+.analytics-insight-label {
+  font-size: 11px; color: var(--accent); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+}
+.analytics-insight-text { font-size: 12.5px; color: var(--text2); line-height: 1.65; }
+
+/* ── Weather tab ── */
+.wt-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.wt-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.wt-subtitle { font-size: 13px; color: var(--text3); }
+.wt-live-badge {
+  font-size: 12px; color: var(--green); background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.2); border-radius: 20px;
+  padding: 4px 12px; font-weight: 600; flex-shrink: 0; margin-top: 4px;
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%,100% { opacity:1; } 50% { opacity:0.5; }
+}
+.wt-city-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 14px; margin-bottom: 24px;
+}
+.wt-city-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px;
+  animation: cardIn 0.4s cubic-bezier(0.22,1,0.36,1) both;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.wt-city-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+@keyframes cardIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.wt-city-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.wt-city-name { font-size: 15px; font-weight: 600; }
+.wt-city-country { font-size: 11px; color: var(--text3); }
+.wt-city-icon { font-size: 24px; }
+.wt-city-temp { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.wt-city-cond { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+.wt-city-hum { font-size: 11px; color: var(--text3); margin-bottom: 10px; }
+.wt-risk-badge {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px; border: 1px solid;
+}
+.wt-season-chart {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 140px; padding-bottom: 4px;
+}
+.wt-season-bar-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+}
+.wt-season-count { font-size: 9px; color: var(--text3); }
+.wt-season-bar {
+  width: 100%; border-radius: 4px 4px 0 0;
+  transition: height 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.wt-season-month { font-size: 9px; color: var(--text3); }
+.wt-tips-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 14px;
+}
+.wt-tip-card {
+  background: var(--bg3); border-radius: 10px;
+  padding: 16px; transition: background 0.2s;
+}
+.wt-tip-card:hover { background: var(--bg4); }
+.wt-tip-icon { font-size: 22px; margin-bottom: 8px; }
+.wt-tip-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.wt-tip-desc { font-size: 12px; color: var(--text3); line-height: 1.6; }
+
+/* ── ROI Banner ── */
+.roi-banner {
+  background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(21,128,61,0.05) 100%);
+  border: 1px solid rgba(34,197,94,0.2); border-radius: 12px;
+  padding: 20px 24px; display: flex; align-items: center; gap: 32px;
+  margin-bottom: 24px; flex-wrap: wrap;
+}
+.roi-banner-left { flex: 1; min-width: 200px; }
+.roi-banner-title { font-size: 16px; font-weight: 600; color: #4ade80; display: flex; align-items: center; gap: 8px; }
+.roi-icon { font-size: 20px; }
+.roi-banner-sub { font-size: 13px; color: var(--text2); margin-top: 4px; }
+.roi-stats { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.roi-stat-val { font-size: 24px; font-weight: 700; color: white; letter-spacing: -0.5px; }
+.roi-stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.roi-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.1); }
+
+/* ── Manufacturer Stats ── */
+.mfr-stats-section { margin-top: 32px; }
+.mfr-stats-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--text2); }
+.mfr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.mfr-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: relative; overflow: hidden; }
+.mfr-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+.mfr-red::before { background: var(--red); }
+.mfr-amber::before { background: var(--amber); }
+.mfr-blue::before { background: #3b82f6; }
+.mfr-green::before { background: var(--green); }
+.mfr-purple::before { background: #a855f7; }
+.mfr-teal::before { background: #14b8a6; }
+.mfr-card-icon { font-size: 20px; margin-bottom: 8px; }
+.mfr-card-label { font-size: 12px; color: var(--text3); margin-bottom: 4px; }
+.mfr-card-val { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.mfr-card-desc { font-size: 11px; color: var(--text2); line-height: 1.4; }
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 1024px) {
+  .grid4, .wt-city-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid2, .mfr-grid { grid-template-columns: 1fr; }
+  .wt-tips-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .app { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; min-height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 12px; gap: 12px; }
+  .sidebar-logo { border-bottom: none; padding: 0; margin-right: auto; }
+  .sidebar-section { padding: 0; display: flex; gap: 8px; align-items: center; }
+  .sidebar-label { display: none; }
+  .nav-item { width: auto; padding: 6px 12px; font-size: 12px; }
+  .sidebar-bottom { display: none; }
+  .roi-banner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .roi-stats { width: 100%; justify-content: space-between; }
+  .roi-divider { display: none; }
+}
+@media (max-width: 480px) {
+  .grid4, .wt-city-grid, .wt-tips-grid { grid-template-columns: 1fr; }
+  .roi-stats { flex-direction: column; align-items: flex-start; gap: 12px; }
+}

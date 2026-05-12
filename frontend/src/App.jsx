@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 
+import BridgestoneLanding from "./components/BridgestoneLanding";
 import Login     from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import Upload    from "./components/Upload";
 import AllClaims from "./components/AllClaims";
 import Analytics from "./components/Analytics";
 import Settings  from "./components/Settings";
+import WeatherTab from "./components/WeatherTab";
 
 import { getClaimsAPI } from "./services/api";
 
@@ -51,6 +53,17 @@ const NAV_MAIN = [
       </svg>
     ),
   },
+  {
+    id: "weather", label: "Weather & Risk",
+    icon: (
+      <svg className="nav-icon" viewBox="0 0 16 16" fill="none">
+        <path d="M3.5 11a3.5 3.5 0 017 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+        <circle cx="8" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.4"/>
+        <path d="M8 1.5v1M8 8.5v1M1.5 5h1M12.5 5h1M3.3 2.8l.7.7M11.3 2.8l-.7.7"
+          stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
 ];
 
 const PAGE_TITLES = {
@@ -58,16 +71,18 @@ const PAGE_TITLES = {
   upload:    "Submit Claim",
   claims:    "All Claims",
   analytics: "Analytics",
+  weather:   "Weather & Tyre Risk",
   settings:  "Settings",
 };
 
 export default function App() {
-  const [loggedIn, setLoggedIn]     = useState(false);
-  const [currentUser, setCurrentUser] = useState("");
-  const [page, setPage]             = useState("dashboard");
-  const [claims, setClaims]         = useState([]);
-  const [toast, setToast]           = useState("");
-  const [loading, setLoading]       = useState(false);
+  const [showLanding, setShowLanding]   = useState(true);
+  const [loggedIn, setLoggedIn]         = useState(false);
+  const [currentUser, setCurrentUser]   = useState("");
+  const [page, setPage]                 = useState("dashboard");
+  const [claims, setClaims]             = useState([]);
+  const [toast, setToast]               = useState("");
+  const [loading, setLoading]           = useState(false);
 
   /* ── Fetch claims ── */
   const fetchClaims = useCallback(async () => {
@@ -97,7 +112,6 @@ export default function App() {
     setTimeout(() => setToast(""), 2800);
   };
 
-  /* ── Claim added ── */
   const handleClaimAdded = (claim) => {
     setClaims((prev) => [
       ...prev,
@@ -105,19 +119,17 @@ export default function App() {
     ]);
   };
 
-  /* ── Status changed in modal ── */
   const handleStatusChange = (id, status) => {
     setClaims((prev) => prev.map((c) => c.id === id ? { ...c, status } : c));
   };
 
-  /* ── Clear all ── */
   const handleClearClaims = () => setClaims([]);
 
-  /* ── Logout ── */
   const handleLogout = () => {
     setLoggedIn(false);
     setClaims([]);
     setPage("dashboard");
+    setShowLanding(true);
   };
 
   const dateStr = new Date().toLocaleDateString("en-GB", {
@@ -125,6 +137,11 @@ export default function App() {
   });
 
   const manualCount = claims.filter((c) => c.manual_intervention).length;
+
+  /* ── Show Bridgestone landing first ── */
+  if (showLanding) {
+    return <BridgestoneLanding onSkip={() => setShowLanding(false)} />;
+  }
 
   if (!loggedIn) {
     return <Login setLoggedIn={setLoggedIn} setCurrentUser={setCurrentUser} />;
@@ -184,6 +201,21 @@ export default function App() {
           </button>
         </div>
 
+        <div className="sidebar-section">
+          <div className="sidebar-label">Bridgestone</div>
+          <button
+            id="nav-intro"
+            className="nav-item"
+            onClick={() => setShowLanding(true)}
+          >
+            <svg className="nav-icon" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4"/>
+              <path d="M8 5v4M8 10.5v.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+            About Bridgestone
+          </button>
+        </div>
+
         <div className="sidebar-bottom">
           <div className="user-row">
             <div className="avatar">{initials || "R"}</div>
@@ -204,7 +236,6 @@ export default function App() {
 
       {/* ── Main content ── */}
       <div className="main">
-        {/* Topbar */}
         <header className="topbar">
           <span className="topbar-title">{PAGE_TITLES[page] || page}</span>
           <div className="topbar-spacer" />
@@ -222,24 +253,13 @@ export default function App() {
           <span className="topbar-date">{dateStr}</span>
         </header>
 
-        {/* Page content */}
         <main className="content">
           {page === "dashboard" && (
-            <Dashboard
-              claims={claims}
-              navigateTo={setPage}
-              loading={loading}
-            />
+            <Dashboard claims={claims} navigateTo={setPage} loading={loading} />
           )}
-
           {page === "upload" && (
-            <Upload
-              onClaimAdded={handleClaimAdded}
-              showToast={showToast}
-              navigateTo={setPage}
-            />
+            <Upload onClaimAdded={handleClaimAdded} showToast={showToast} navigateTo={setPage} />
           )}
-
           {page === "claims" && (
             <AllClaims
               claims={claims}
@@ -249,22 +269,14 @@ export default function App() {
               loading={loading}
             />
           )}
-
-          {page === "analytics" && (
-            <Analytics claims={claims} />
-          )}
-
-          {page === "settings" && (
-            <Settings
-              showToast={showToast}
-              onClearClaims={handleClearClaims}
-              claimsCount={claims.length}
-            />
+          {page === "analytics" && <Analytics claims={claims} />}
+          {page === "weather"   && <WeatherTab />}
+          {page === "settings"  && (
+            <Settings showToast={showToast} onClearClaims={handleClearClaims} claimsCount={claims.length} />
           )}
         </main>
       </div>
 
-      {/* Toast */}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );

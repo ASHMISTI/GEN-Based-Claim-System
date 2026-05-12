@@ -220,7 +220,13 @@ export default function Upload({ onClaimAdded, showToast, navigateTo }) {
         {/* Result panel */}
         {result && (
           <div className="result-panel">
-            <div className="result-label-small">AI Assessment Result</div>
+            <div className="result-label-small" style={{ display:"flex", alignItems:"center", gap:8 }}>
+              AI Assessment Result
+              {result.ai_powered
+                ? <span className="badge badge-blue" style={{ fontSize:10 }}>✦ Gemini Vision</span>
+                : <span className="badge badge-gray" style={{ fontSize:10 }}>📋 Structured Reasoning</span>
+              }
+            </div>
             <div className="result-header">
               <div className={`result-severity-ring ${result.damage.toLowerCase()}`}>
                 <span>{result.severity}</span>
